@@ -36,4 +36,9 @@ export class PostsService {
             );
     }
 
+    clearAllPosts() {
+        return this.http
+            .delete<{}>('https://angularhttpii.firebaseio.com/posts.json');
+    }
+
 }

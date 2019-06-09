@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpEventType } from '@angular/common/http';
 import { Post } from './post.model';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 import { Subject, throwError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -15,7 +15,10 @@ export class PostsService {
         this.http
             .post<{ name: string }>(
                 'https://angularhttpii.firebaseio.com/posts.json',
-                postData
+                postData,
+                {
+                    observe: 'response' // returns the full response of the http call
+                }
             )
             .subscribe(responseData => {
                 console.log(responseData);
@@ -24,9 +27,6 @@ export class PostsService {
             });
     }
 
-    // adding a custom header. to test...clear network tab, fetch posts, check the Headers section in the console for the request
-    // adding multiple Params to a http request. print pretty formats the json
-    // && custom key is only an example and is not supported by firebase
     fetchPosts() {
         let searchParams = new HttpParams();
         searchParams = searchParams.append('print', 'pretty');
@@ -57,7 +57,16 @@ export class PostsService {
 
     clearAllPosts() {
         return this.http
-            .delete<{}>('https://angularhttpii.firebaseio.com/posts.json');
+            .delete<{}>('https://angularhttpii.firebaseio.com/posts.json',
+                {
+                    observe: 'events'
+                }
+            ).pipe(tap(event => {
+                console.log(event);
+                if (event.type === HttpEventType.Response) {
+                    console.log('event body: ', event.body);
+                }
+            }));
     }
 
 }

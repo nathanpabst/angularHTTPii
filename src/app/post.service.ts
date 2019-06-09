@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpEventType } from '@angular/com
 import { Post } from './post.model';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Subject, throwError } from 'rxjs';
+import { text } from '@angular/core/src/render3';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
@@ -35,7 +36,8 @@ export class PostsService {
             .get<{ [key: string]: Post }>('https://angularhttpii.firebaseio.com/posts.json',
                 {
                     headers: new HttpHeaders({ 'Custom-header': 'Hello' }),
-                    params: searchParams
+                    params: searchParams,
+                    responseType: 'json' // ensures that the response will come back in json format
                 }
             )
             .pipe(
@@ -59,7 +61,8 @@ export class PostsService {
         return this.http
             .delete<{}>('https://angularhttpii.firebaseio.com/posts.json',
                 {
-                    observe: 'events'
+                    observe: 'events',
+                    responseType: 'json' // will convert to a JS Object. other options: blob..for a file, and text
                 }
             ).pipe(tap(event => {
                 console.log(event);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post } from './post.model';
 import { map, catchError } from 'rxjs/operators';
 import { Subject, throwError } from 'rxjs';
@@ -24,9 +24,14 @@ export class PostsService {
             });
     }
 
+    // adding a custom header. to test...clear network tab, fetch posts, check the Headers section in the console for the request
     fetchPosts() {
         return this.http
-            .get<{ [key: string]: Post }>('https://angularhttpii.firebaseio.com/posts.json')
+            .get<{ [key: string]: Post }>('https://angularhttpii.firebaseio.com/posts.json',
+                {
+                    headers: new HttpHeaders({ 'Custom-header': 'Hello' })
+                }
+            )
             .pipe(
                 map(responseData => {
                     const postsArray: Post[] = [];

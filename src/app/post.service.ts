@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Post } from './post.model';
 import { map, catchError } from 'rxjs/operators';
 import { Subject, throwError } from 'rxjs';
@@ -25,11 +25,17 @@ export class PostsService {
     }
 
     // adding a custom header. to test...clear network tab, fetch posts, check the Headers section in the console for the request
+    // adding multiple Params to a http request. print pretty formats the json
+    // && custom key is only an example and is not supported by firebase
     fetchPosts() {
+        let searchParams = new HttpParams();
+        searchParams = searchParams.append('print', 'pretty');
+        searchParams = searchParams.append('custom', 'key');
         return this.http
             .get<{ [key: string]: Post }>('https://angularhttpii.firebaseio.com/posts.json',
                 {
-                    headers: new HttpHeaders({ 'Custom-header': 'Hello' })
+                    headers: new HttpHeaders({ 'Custom-header': 'Hello' }),
+                    params: searchParams
                 }
             )
             .pipe(
